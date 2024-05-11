@@ -20,11 +20,10 @@ import kotlinx.coroutines.processNextEventInCurrentThread
 import org.w3c.dom.Text
 
 class MainActivity : ComponentActivity() {
-
+    // Flags to control whether operators, decimal, and trig functions can be added to the workingsTextView
     private var canAddOperation = false
     private var canAddDecimal = true
     private var canAddTrig = true
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +32,12 @@ class MainActivity : ComponentActivity() {
 
 
     }
-    fun trigAction(view: View) {
+    fun trigAction(view: View) { // Function to handle trigonometric functions button click
         val workingsTv: TextView = findViewById(R.id.workingsTV)
 
         if (view is Button) {
-            if (view.text == "TAN")
+            // Check if the trig function can be added and append it to the workingsTextView
+            if (view.text == "TAN"|| view.text == "SIN" || view.text == "COS")
                 if (canAddTrig)
                     workingsTv.append(view.text)
 
@@ -45,56 +45,59 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    fun numberAction(view: View) {
+    fun numberAction(view: View) { // Function to handle number button click
         val workingsTv: TextView = findViewById(R.id.workingsTV)
 
         if (view is Button) {
             if (view.text == ".") {
+                // Check if the decimal can be added and append it to the workingsTextView
                 if (canAddDecimal) {
                     workingsTv.append(view.text)
                 }
                 canAddDecimal = false
             } else
+                // Append the number to the workingsTextView
                 workingsTv.append(view.text)
-
+            // Set flag to true to allow adding operators
             canAddOperation = true
         }
     }
 
-    fun operationAction(view: View) {
+    fun operationAction(view: View) { // Function to handle operator button click
         val workingsTv: TextView = findViewById(R.id.workingsTV)
         if (view is Button && canAddOperation) {
-
+            // Append the operator to the workingsTextView
             workingsTv.append(view.text)
+            // Reset Flags
             canAddOperation = false
             canAddDecimal = true
         }
     }
 
-    fun equalsAction(view: View) {
+    fun equalsAction(view: View) { // Function to handle equals button click
         val resultsTV: TextView = findViewById(R.id.resultsTV)
-
+        // Calculate and display the result
         resultsTV.text = calculateResults()
 
     }
 
-    fun backSpaceAction(view: View) {
+    fun backSpaceAction(view: View) { // Function to handle backspace button click
         val workingsTv: TextView = findViewById(R.id.workingsTV)
         val length = workingsTv.length()
 
-        if (length > 0) {
+        if (length > 0) { // Remove the last character from the workingsTextView
             workingsTv.text = workingsTv.text.subSequence(0, length - 1)
         }
     }
 
-    fun allClearAction(view: View) {
+    fun allClearAction(view: View) { // Function to handle all clear button click
         val workingsTv: TextView = findViewById(R.id.workingsTV)
-        workingsTv.text = ""
+        workingsTv.text = "" // Clear the workingsTextView
         val resultsTV: TextView = findViewById(R.id.resultsTV)
-        resultsTV.text = ""
+        resultsTV.text = "" // Clear the resultsTextView
     }
 
-    private fun calculateResults(): String {
+    private fun calculateResults(): String { // function to calculate the results based on the contents of the workingsTextView
         val digitsOperators = digitsOperators()
         if (digitsOperators.isEmpty()) {
             return ""
@@ -114,7 +117,7 @@ class MainActivity : ComponentActivity() {
         return result.toString()
     }
 
-    private fun tanSinCosCalculate(passedList: MutableList<Any>): Any {
+    private fun tanSinCosCalculate(passedList: MutableList<Any>): Any { // Function to calculate trigonometric functions
         var result = passedList[0] as Float
 
         for (i in passedList.indices) {
@@ -132,7 +135,7 @@ class MainActivity : ComponentActivity() {
         return result
     }
 
-    private fun addSubtractCalculate(passedList: MutableList<Any>): MutableList<Any> {
+    private fun addSubtractCalculate(passedList: MutableList<Any>): MutableList<Any> { // Function to calculate addition and subtraction
         val newList = mutableListOf<Any>()
         var restartIndex = passedList.size
 
@@ -166,7 +169,7 @@ class MainActivity : ComponentActivity() {
         return newList
     }
 
-    private fun timesDivisionCalculate(passedList: MutableList<Any>): MutableList<Any> {
+    private fun timesDivisionCalculate(passedList: MutableList<Any>): MutableList<Any> { // Function to calculate multiplication and division
         var list = passedList
         while (list.contains('*') || list.contains('/')) {
             list = calcTimesDiv(list)
@@ -174,7 +177,7 @@ class MainActivity : ComponentActivity() {
         return list
     }
 
-    private fun calcTimesDiv(passedList: MutableList<Any>): MutableList<Any> {
+    private fun calcTimesDiv(passedList: MutableList<Any>): MutableList<Any> { // Function to perform multiplication and division calculations
         val newList = mutableListOf<Any>()
         var restartIndex = passedList.size
 
@@ -208,7 +211,7 @@ class MainActivity : ComponentActivity() {
         return newList
     }
 
-    private fun digitsOperators(): MutableList<Any> {
+    private fun digitsOperators(): MutableList<Any> { //  Function to extract digits and operator from workingsTextView
         val list = mutableListOf<Any>()
         val workingsTv: TextView = findViewById(R.id.workingsTV)
         var currentDigit = ""
